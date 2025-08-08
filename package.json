@@ -8,11 +8,6 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.cjs"
-    },
-    "./jotai": {
-      "types": "./dist/types/jotai/index.d.ts",
-      "import": "./dist/esm/jotai/index.js",
-      "require": "./dist/cjs/jotai/index.cjs"
     }
   },
   "files": [
