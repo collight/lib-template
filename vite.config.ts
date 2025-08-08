@@ -1,5 +1,4 @@
 // vite.config.ts
-import fs from 'fs'
 import { builtinModules } from 'module'
 import path from 'path'
 import { defineConfig, UserConfig } from 'vite'
@@ -9,24 +8,24 @@ import pkg from './package.json'
 interface PackageJson {
   dependencies?: Record<string, string>
   peerDependencies?: Record<string, string>
+  devDependencies?: Record<string, string>
+}
+
+function getDependencyRegex(depName: string) {
+  const escaped = depName.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
+  return new RegExp(`^${escaped}(\/.+)?$`)
 }
 
 function getExternal(pkg: PackageJson) {
-  const externals = [...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})]
-
-  function getPkgNameRegex(pkgName: string) {
-    const escaped = pkgName.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&')
-    return new RegExp(`^${escaped}(\/.+)?$`)
-  }
-
-  return externals.map(getPkgNameRegex)
+  const { dependencies, peerDependencies } = pkg
+  const deps = [...Object.keys(dependencies ?? {}), ...Object.keys(peerDependencies ?? {})]
+  return deps.map(getDependencyRegex)
 }
 
 const srcPath = path.resolve(__dirname, 'src')
 const distPath = path.resolve(__dirname, 'dist')
 
 const entry = path.resolve(srcPath, 'index.ts')
-const jotaiEntry = path.resolve(srcPath, 'jotai/index.ts')
 const external = [...getExternal(pkg), ...builtinModules]
 
 export default defineConfig((): UserConfig => {
@@ -40,7 +39,7 @@ export default defineConfig((): UserConfig => {
       sourcemap: true,
 
       rollupOptions: {
-        input: [entry, jotaiEntry],
+        input: [entry],
         external: external,
         preserveEntrySignatures: 'strict',
         output: [

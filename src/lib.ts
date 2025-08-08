@@ -1,3 +1,3 @@
-export function libTemplate() {
+export function libTemplate(): string {
   return 'lib-template'
 }
